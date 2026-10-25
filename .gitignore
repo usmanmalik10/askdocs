@@ -1,0 +1,48 @@
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# JavaScript
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+.pnpm-store/
+*.tsbuildinfo
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Reports and temporary data
+coverage/
+playwright-report/
+test-results/
+*.log
+tmp/
+temp/
+uploads/
+.local/
+data/
+
+# Editors and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
