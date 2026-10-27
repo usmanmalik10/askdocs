@@ -6,5 +6,9 @@
   "engines": {
     "node": "22.23.4",
     "pnpm": "9.15.0"
+  },
+  "scripts": {
+    "workspace:install": "pnpm install --frozen-lockfile",
+    "workspace:list": "pnpm --recursive list --depth -1"
   }
 }
