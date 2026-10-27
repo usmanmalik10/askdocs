@@ -11,7 +11,9 @@ Use the same versions on Windows and Ubuntu:
 
 Node and Python versions are recorded in .nvmrc and .python-version.
 The pnpm version is recorded in package.json.
-.npmrc enables strict engine checks during pnpm installation.
+.npmrc enables strict Node and pnpm engine checks during installation.
+uv's own version is documented here; it is not automatically installed or enforced.
+Install uv 0.13.5 separately before using Python service commands.
 
 ## Windows and Ubuntu
 
@@ -31,10 +33,21 @@ separately in each clone. Local safeguards are not included by cloning.
 From the repository root:
 
 ```text
-pnpm install --frozen-lockfile
+pnpm workspace:install
+pnpm workspace:list
 ```
 
-In Ubuntu with nvm installed, run `nvm use` first.
+`pnpm workspace:install` runs `pnpm install --frozen-lockfile`. It fails if dependency
+manifests and the committed lockfile disagree, rather than updating the lockfile.
+It does not install Node, pnpm, Python or uv, create local secrets, or start services.
+
+`pnpm workspace:list` lists the packages pnpm currently recognizes. It should
+include the root workspace and `@askdocs/config`. Future app bootstrap tickets
+will add package manifests for the applications; empty folders are not packages.
+
+In Ubuntu with nvm installed, run `nvm use` first. On Windows, select Node.js
+22.23.4 using your Windows installation or version manager. These two root
+commands work in PowerShell, Git Bash, and Ubuntu Bash.
 
 pnpm manages apps/web, apps/api, apps/worker, and packages/*.
 apps/ai is managed separately with uv.
