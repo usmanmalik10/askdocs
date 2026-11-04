@@ -1,12 +1,14 @@
+import Link from "next/link";
+
 export function WorkspaceShell({ children, library }: { children: React.ReactNode; library: React.ReactNode }) {
   return <div className="app-shell">
     <aside className="sidebar" aria-label="Document workspace">
-      <a className="brand" href="/" aria-label="AskDocs home"><span className="brand-mark" aria-hidden="true">A<span>↗</span></span>AskDocs</a>
+      <Link className="brand" href="/" aria-label="AskDocs home"><span className="brand-mark" aria-hidden="true">A<span>↗</span></span>AskDocs</Link>
       <p className="brand-caption">Your documents. Clear answers.</p>
       <div className="workspace-label"><span className="status-dot" /> Guest workspace <span className="small-tag">24h</span></div>
       <div className="library-heading"><h2>Your documents</h2><span className="eyebrow">LIBRARY</span></div>
       {library}
-      <div className="sidebar-note"><strong>A little more clarity.</strong><p>Find the answer, then check the passage it came from.</p><a href="/privacy">How your data is handled ↗</a></div>
+      <div className="sidebar-note"><strong>A little more clarity.</strong><p>Find the answer, then check the passage it came from.</p><Link href="/privacy">How your data is handled ↗</Link></div>
       <a className="repository-link" href="https://github.com/usmanmalik10/askdocs" target="_blank" rel="noreferrer">Open source on GitHub ↗</a>
     </aside>
     <div className="workspace-body">
