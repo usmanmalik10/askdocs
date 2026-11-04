@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
-import type { Answer, DocumentRecord, Workspace as WorkspaceData } from "@/lib/api";
+import type { Answer, Citation, DocumentRecord, Workspace as WorkspaceData } from "@/lib/api";
+import { AnswerText, SourceDialog } from "./source-dialog";
 import { Welcome, WorkspaceShell } from "./workspace-shell";
 
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "Something went wrong. Please retry."; }
@@ -21,6 +22,7 @@ export function Workspace() {
   const [file, setFile] = useState<File | null>(null);
   const [consent, setConsent] = useState(false);
   const [question, setQuestion] = useState("");
+  const [source, setSource] = useState<Citation | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const activeOperation = useRef(false);
   const historyRequest = useRef<AbortController | null>(null);
@@ -115,7 +117,7 @@ export function Workspace() {
       <div className="conversation" aria-label="Document conversation" aria-busy={busy === "ask" || historyLoading}>
         {historyLoading ? <p role="status" className="notice">Loading saved answers…</p> : null}
         {!answers.length && !historyLoading ? <section className="chat-welcome"><span className="eyebrow">READY WHEN YOU ARE</span><h2>What would you like to understand?</h2><p>Ask a specific question about <strong>{selected.name}</strong>. Each answer includes the passages it used.</p><div className="suggestions">{["What are the main points in this document?", "What important dates or deadlines are mentioned?", "What actions does this document recommend?"].map(prompt => <button type="button" key={prompt} onClick={() => setQuestion(prompt)}>{prompt} <span aria-hidden="true">↗</span></button>)}</div></section> : null}
-        {answers.map(answer => <article className="answer-pair" key={answer.id}><div className="question-bubble"><span className="eyebrow">YOU ASKED</span><p>{answer.question}</p></div><div className="answer-content"><div className="answer-label"><span className="mini-brand" aria-hidden="true">A</span><strong>AskDocs</strong><span>{answer.grounded ? "Sources checked" : "Not enough evidence"}</span></div><p className="answer-text">{answer.answer}</p>{answer.citations.length ? <div className="inline-sources">{answer.citations.map(source => <details key={source.id}><summary>[{source.id}] {source.name} · Page {source.page}</summary><blockquote>{source.quote}</blockquote><p>{source.passage}</p></details>)}</div> : null}</div></article>)}
+        {answers.map(answer => <article className="answer-pair" key={answer.id}><div className="question-bubble"><span className="eyebrow">YOU ASKED</span><p>{answer.question}</p></div><div className="answer-content"><div className="answer-label"><span className="mini-brand" aria-hidden="true">A</span><strong>AskDocs</strong><span>{answer.grounded ? "Sources checked" : "Not enough evidence"}</span></div><AnswerText text={answer.answer} citations={answer.citations} onSource={setSource}/>{answer.citations.length ? <div className="inline-sources">{answer.citations.map(citation => <button className="source-chip" key={citation.id} type="button" onClick={() => setSource(citation)}>[{citation.id}] {citation.name} <span>Page {citation.page} ↗</span></button>)}</div> : null}</div></article>)}
         {busy === "ask" ? <div className="working" role="status"><span className="pulse"/>Finding passages and checking an answer…</div> : null}
         <div ref={bottom}/>
       </div>
@@ -132,5 +134,6 @@ export function Workspace() {
       </form>
       <p className="workspace-footnote">No account. No retained original file. A temporary workspace that expires in 24 hours.</p>
     </>}
+    <SourceDialog source={source} onClose={() => setSource(null)}/>
   </WorkspaceShell>;
 }
