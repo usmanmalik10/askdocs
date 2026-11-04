@@ -124,14 +124,23 @@ export function Workspace() {
     catch (error) { report(error); activeOperation.current = false; setBusy(null); }
   }
 
+  async function freshWorkspace() {
+    if (activeOperation.current) return;
+    activeOperation.current = true; setBusy("reset");
+    try { await api("session/reset", { method: "POST" }); window.location.assign("/"); }
+    catch (error) { report(error); activeOperation.current = false; setBusy(null); }
+  }
+
   const library = <>
     {loading ? <p className="empty-library" role="status">Opening your workspace…</p> : workspace?.documents.length ? <ul className="document-list">{workspace.documents.map(doc => <li key={doc.id}><button type="button" aria-current={selected?.id === doc.id ? "true" : undefined} disabled={Boolean(busy)} onClick={() => void openDocument(doc)}><span className="document-icon" aria-hidden="true">▤</span><span><strong>{doc.name}</strong><small>{doc.chunk_count} passages · {Math.max(1, Math.round(doc.byte_size / 1024))} KB</small></span></button></li>)}</ul> : <p className="empty-library">No documents yet.<br/>Your first answer starts with a file.</p>}
     {selected ? <button className="button secondary new-upload" type="button" disabled={Boolean(busy)} onClick={() => { historyRequest.current?.abort(); setSelected(null); setAnswers([]); setError(""); setHistoryLoading(false); window.history.replaceState(null, "", "/"); }}>+ Upload another</button> : null}
     {workspace ? <button className="erase-workspace" type="button" disabled={Boolean(busy)} onClick={() => void eraseWorkspace()}>{busy === "erase" ? "Erasing…" : "Erase this workspace"}</button> : null}
+    {workspace ? <p className="usage-note">{workspace.documents.length} / {workspace.limits.documents} documents<br/>{workspace.limits.questions_per_day} question attempts per day<br/>Expires {new Date(workspace.expires_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p> : null}
   </>;
 
   return <WorkspaceShell library={library}>
     {error ? <div className="error" role="alert"><strong>We couldn’t complete that step.</strong><br/>{error}{!workspace && !expired ? <p><button className="button secondary" onClick={() => window.location.reload()}>Retry connection</button></p> : null}</div> : null}
+    {expired ? <div className="expiry-notice"><p>This temporary workspace has expired. Start a fresh one to upload new documents.</p><button className="button" disabled={Boolean(busy)} onClick={() => void freshWorkspace()}>Start a fresh workspace</button></div> : null}
     {selected ? <>
       <div className="document-title"><div><span className="eyebrow">ASK YOUR DOCUMENT</span><h1>{selected.name}</h1><p className="notice">{selected.chunk_count} searchable passages · answers stay with this document</p></div><button className="button danger" type="button" disabled={Boolean(busy)} onClick={() => void removeDocument()}>{busy === "delete" ? "Deleting…" : "Delete document"}</button></div>
       <div className="conversation" aria-label="Document conversation" aria-busy={busy === "ask" || historyLoading}>

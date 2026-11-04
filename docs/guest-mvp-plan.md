@@ -10,7 +10,7 @@ The application must use real retrieval and a connected language model. Missing 
 
 - Next.js provides the responsive interface and same-origin API boundary.
 - A private Python FastAPI service extracts text, chunks it, retrieves evidence, calls the model, and persists document and conversation records.
-- Managed PostgreSQL stores extracted passages and conversation history. Original uploaded files are processed in memory and are not retained.
+- Managed PostgreSQL stores extracted passages and conversation history. Original uploaded files are processed temporarily and are not retained.
 - Vercel Services deploys the two runtimes together. Services is currently Beta. Only the Next.js service has public ingress; Python also requires an internal service secret.
 - An unpredictable HttpOnly guest cookie identifies a browser. Only its hash reaches storage. Every data operation is scoped to that hash and a fixed 24-hour expiry. Another browser cannot recover a guest workspace.
 - Database-backed atomic quotas cap uploads and questions per guest, IP, and deployment. Redis is unnecessary for this bounded release unless measured demand justifies a second service.
