@@ -42,6 +42,8 @@ The generation model defaults to `gemini-3.5-flash-lite` and can be changed thro
 
 Before returning an answer, the service validates numeric citation references and verifies every quoted excerpt against a retrieved passage after whitespace normalization. Every answer paragraph must contain a citation. Unknown references, fabricated quotes, duplicate citations, unreadable JSON, and incomplete responses fail rather than being displayed as successful answers. An unsupported question produces a fixed abstention message without unverified model claims.
 
+Combined references such as `[1, 2]` are normalized to individual `[1] [2]` markers before validation and storage. Every referenced source and quote still passes the same checks, and the browser can render each marker as a separate source button.
+
 Each provider request retries one temporary transport or server failure after a short delay. Quota and credential failures are not retried. The full AI operation has a 65-second deadline; timeout cancels it and rolls back unfinished document or answer writes. This keeps retry behavior within the website’s request window and does not introduce another model or paid fallback.
 
 Citation validation checks provenance, not semantic entailment. A real quote can still be interpreted incorrectly. Users must inspect sources, and evaluation must include irrelevant questions and documents containing hostile instructions. Questions are retrieved independently; the most recent 30 saved answers are displayed, but there is no hidden conversation rewrite or model memory.
