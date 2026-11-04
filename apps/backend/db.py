@@ -34,7 +34,7 @@ async def guest(conn, owner: str):
 async def document(conn, owner: str, document_id):
     row = await (await conn.execute(
         "SELECT d.* FROM documents d JOIN guests g ON g.owner = d.owner "
-        "WHERE d.id = %s AND d.owner = %s AND g.expires_at > now()",
+        "WHERE d.id = %s AND d.owner = %s AND g.expires_at > clock_timestamp()",
         (document_id, owner),
     )).fetchone()
     if row is None:

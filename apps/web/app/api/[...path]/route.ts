@@ -43,6 +43,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const data = await result.json();
     const response = NextResponse.json(data, { status: result.status, headers: { "Cache-Control": "private, no-store" } });
     if (guest.fresh) response.cookies.set(cookieName, guest.token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/", maxAge: GUEST_SECONDS });
+    if (result.ok && request.method === "DELETE" && path === "workspace") response.cookies.set(cookieName, "", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/", maxAge: 0 });
     return response;
   } catch (error) {
     const oversized = error instanceof RangeError;

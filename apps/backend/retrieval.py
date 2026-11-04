@@ -16,7 +16,7 @@ async def retrieve(owner: str, document_id: UUID, question: str) -> list[dict]:
             "1 - (c.embedding <=> %s::vector) AS score "
             "FROM chunks c JOIN documents d ON d.id = c.document_id "
             "JOIN guests g ON g.owner = d.owner "
-            "WHERE d.id = %s AND d.owner = %s AND g.expires_at > now() "
+            "WHERE d.id = %s AND d.owner = %s AND g.expires_at > clock_timestamp() "
             "ORDER BY c.embedding <=> %s::vector LIMIT 6",
             (embedding, document_id, owner, embedding),
         )).fetchall()

@@ -6,6 +6,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from routes import router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,6 +18,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="AskDocs private API", version="0.1.0", lifespan=lifespan, docs_url=None, redoc_url=None)
+app.include_router(router)
 
 
 @app.middleware("http")
