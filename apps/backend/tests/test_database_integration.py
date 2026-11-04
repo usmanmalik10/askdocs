@@ -127,3 +127,53 @@ async def test_upload_requires_consent_and_rolls_back_failed_extraction():
         assert response.status_code == 422
         workspace = await client.get("/workspace", headers=headers(OWNER_A))
         assert workspace.json()["documents"] == []
+
+
+async def test_new_workspace_creation_has_a_shared_budget(monkeypatch):
+    monkeypatch.setitem(__import__("quotas").LIMITS, "workspace", (5, 2, 3))
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        for owner in (OWNER_A, OWNER_B):
+            identity = headers(owner)
+            identity["X-Guest-Address"] = OWNER_A
+            assert (await client.get("/workspace", headers=identity)).status_code == 200
+        third = headers("c" * 64)
+        third["X-Guest-Address"] = OWNER_A
+        assert (await client.get("/workspace", headers=third)).status_code == 429
+        # Existing sessions still work after the new-session address budget is exhausted.
+        assert (await client.get("/workspace", headers=headers(OWNER_A))).status_code == 200
+    async with database() as conn:
+        assert (await (await conn.execute("SELECT count(*) AS n FROM guests")).fetchone())["n"] == 2
+
+
+async def test_model_outage_can_be_retried_without_a_fake_answer(monkeypatch):
+    from fastapi import HTTPException
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        doc = await upload(client)
+        original = __import__("routes").answer_question
+
+        async def unavailable(*_args):
+            raise HTTPException(503, "AI provider is temporarily unavailable.")
+
+        monkeypatch.setattr("routes.answer_question", unavailable)
+        response = await client.post(f"/documents/{doc}/ask", headers=headers(OWNER_A), json={"question": "How much leave?"})
+        assert response.status_code == 503
+        history = await client.get(f"/documents/{doc}/answers", headers=headers(OWNER_A))
+        assert history.json()["answers"] == []
+        monkeypatch.setattr("routes.answer_question", original)
+        assert (await client.post(f"/documents/{doc}/ask", headers=headers(OWNER_A), json={"question": "How much leave?"})).status_code == 201
+
+
+async def test_total_ai_timeout_does_not_persist_an_answer(monkeypatch):
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        doc = await upload(client)
+
+        async def unresponsive(*_args):
+            await asyncio.Event().wait()
+
+        monkeypatch.setattr("provider.AI_DEADLINE_SECONDS", 0.2)
+        monkeypatch.setattr("routes.answer_question", unresponsive)
+        response = await client.post(f"/documents/{doc}/ask", headers=headers(OWNER_A), json={"question": "How much leave?"})
+        assert response.status_code == 504
+        history = await client.get(f"/documents/{doc}/answers", headers=headers(OWNER_A))
+        assert history.json()["answers"] == []

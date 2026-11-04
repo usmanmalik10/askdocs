@@ -1,0 +1,9 @@
+AskDocs public demonstration fixture
+
+Annual leave policy
+Full-time employees receive 20 working days of paid annual leave per calendar year.
+Leave requests must be submitted through the HR portal at least two weeks before the requested start date.
+The employee's manager must approve a request before leave is booked.
+Up to five unused leave days can be carried into the following year with manager approval.
+
+This fictional policy is provided only for testing AskDocs. It contains no personal or employer information.

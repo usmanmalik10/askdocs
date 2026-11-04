@@ -16,6 +16,8 @@ def test_valid_answer_links_to_exact_passage_and_original_page():
 
 
 @pytest.mark.parametrize("payload", [
+    None,
+    [],
     {**GOOD, "answer": "A made-up answer without citations."},
     {**GOOD, "answer": "An unsupported reference. [2]"},
     {**GOOD, "evidence": [{"id": 1, "quote": "Employees receive 200 days of paid annual leave."}]},

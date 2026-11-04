@@ -2,12 +2,23 @@ import asyncio
 import math
 import os
 import re
+from contextlib import asynccontextmanager
 
 import httpx
 from fastapi import HTTPException
 
 API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models/"
 EMBEDDING_MODEL = "gemini-embedding-001"
+AI_DEADLINE_SECONDS = 65
+
+
+@asynccontextmanager
+async def ai_deadline():
+    try:
+        async with asyncio.timeout(AI_DEADLINE_SECONDS):
+            yield
+    except TimeoutError as exc:
+        raise HTTPException(504, "The AI took too long to respond. Please retry your question or upload.") from exc
 
 
 def model_name() -> str:
@@ -22,7 +33,18 @@ async def model_request(client: httpx.AsyncClient, operation: str, payload: dict
     if not key:
         raise HTTPException(503, "The AI provider is not connected yet.")
     try:
-        response = await client.post(API_ROOT + operation, headers={"x-goog-api-key": key}, json=payload)
+        for attempt in range(2):
+            try:
+                response = await client.post(API_ROOT + operation, headers={"x-goog-api-key": key}, json=payload)
+            except httpx.TransportError:
+                if attempt:
+                    raise
+                await asyncio.sleep(0.5)
+                continue
+            if response.status_code in (500, 502, 503, 504) and not attempt:
+                await asyncio.sleep(0.5)
+                continue
+            break
         if response.status_code == 429:
             raise HTTPException(429, "The free AI quota is currently exhausted. Please try again later.")
         if response.status_code in (401, 403, 404):

@@ -1,8 +1,8 @@
 """Apply versioned migrations explicitly; never migrate during an HTTP request."""
-import asyncio
 from pathlib import Path
 
 from db import database
+from runtime import run
 
 
 async def migrate():
@@ -20,4 +20,4 @@ async def migrate():
 
 
 if __name__ == "__main__":
-    asyncio.run(migrate())
+    run(migrate())

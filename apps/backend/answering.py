@@ -24,6 +24,8 @@ def whitespace(text: str) -> str:
 
 
 def validate_answer(payload: dict, sources: list[dict]) -> dict:
+    if not isinstance(payload, dict):
+        raise HTTPException(502, "The AI returned an unreadable answer. Please retry.")
     if payload.get("grounded") is False:
         return {"answer": NO_EVIDENCE, "grounded": False, "citations": []}
     try:

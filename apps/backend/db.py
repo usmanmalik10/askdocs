@@ -15,18 +15,20 @@ async def database():
     try:
         async with await psycopg.AsyncConnection.connect(
             url, row_factory=dict_row, connect_timeout=5,
-            options="-c statement_timeout=10000 -c lock_timeout=3000",
         ) as conn:
+            await conn.execute("SET LOCAL statement_timeout = '10s'")
+            await conn.execute("SET LOCAL lock_timeout = '3s'")
             yield conn
     except psycopg.Error as exc:
         # Never include connection strings or document text in error responses.
         raise HTTPException(503, "Document storage is temporarily unavailable. Please retry.") from exc
 
 
-async def guest(conn, owner: str):
-    await conn.execute("INSERT INTO guests(owner) VALUES (%s) ON CONFLICT DO NOTHING", (owner,))
+async def guest(conn, owner: str, *, create: bool = True):
+    if create:
+        await conn.execute("INSERT INTO guests(owner) VALUES (%s) ON CONFLICT DO NOTHING", (owner,))
     row = await (await conn.execute("SELECT expires_at FROM guests WHERE owner = %s", (owner,))).fetchone()
-    if row["expires_at"] <= datetime.now(timezone.utc):
+    if row is None or row["expires_at"] <= datetime.now(timezone.utc):
         raise HTTPException(410, "This guest workspace has expired. Start a fresh workspace.")
     return row["expires_at"]
 

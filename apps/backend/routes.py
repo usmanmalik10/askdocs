@@ -11,7 +11,7 @@ from answering import answer_question
 from chunking import chunk_pages
 from db import database, document, guest, vector
 from extraction import MAX_BYTES, extract
-from provider import EMBEDDING_MODEL, embed, model_name
+from provider import EMBEDDING_MODEL, ai_deadline, embed, model_name
 from quotas import consume, lock_guest
 from retrieval import retrieve
 
@@ -23,10 +23,17 @@ def require_ai():
         raise HTTPException(503, "The AI provider is not connected yet.")
 
 
+async def open_guest(conn, owner: str, address: str):
+    existing = await (await conn.execute("SELECT 1 FROM guests WHERE owner = %s", (owner,))).fetchone()
+    if existing is None:
+        await consume("workspace", owner, address)
+    return await guest(conn, owner)
+
+
 @router.get("/workspace")
 async def workspace(request: Request):
     async with database() as conn:
-        expires_at = await guest(conn, request.state.owner)
+        expires_at = await open_guest(conn, request.state.owner, request.state.address)
         rows = await (await conn.execute(
             "SELECT id, name, byte_size, chunk_count, created_at FROM documents WHERE owner = %s ORDER BY created_at",
             (request.state.owner,),
@@ -50,8 +57,10 @@ async def upload(request: Request, file: UploadFile = File(), consent: bool = Fo
     if not name:
         raise HTTPException(422, "Choose a named PDF, TXT, or Markdown file.")
     async with database() as conn:
+        await open_guest(conn, request.state.owner, request.state.address)
+    async with ai_deadline(), database() as conn:
         await lock_guest(conn, request.state.owner)
-        await guest(conn, request.state.owner)
+        await guest(conn, request.state.owner, create=False)
         count = await (await conn.execute("SELECT count(*) AS total FROM documents WHERE owner = %s", (request.state.owner,))).fetchone()
         if count["total"] >= 5:
             raise HTTPException(409, "Your workspace holds five documents. Delete one before uploading another.")
@@ -59,7 +68,7 @@ async def upload(request: Request, file: UploadFile = File(), consent: bool = Fo
         pages = await asyncio.to_thread(extract, name, content)
         chunks = chunk_pages(pages)
         embeddings = await embed([chunk.content for chunk in chunks])
-        await guest(conn, request.state.owner)
+        await guest(conn, request.state.owner, create=False)
         document_id = uuid4()
         row = await (await conn.execute(
             "INSERT INTO documents(id, owner, name, media_type, byte_size, chunk_count) VALUES (%s,%s,%s,%s,%s,%s) "
@@ -90,7 +99,7 @@ class Question(BaseModel):
 @router.post("/documents/{document_id}/ask", status_code=201)
 async def ask(document_id: UUID, body: Question, request: Request):
     require_ai()
-    async with database() as conn:
+    async with ai_deadline(), database() as conn:
         await lock_guest(conn, request.state.owner)
         await document(conn, request.state.owner, document_id)
         await consume("question", request.state.owner, request.state.address)

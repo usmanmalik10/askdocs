@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from db import database
 
-LIMITS = {"upload": (5, 10, 20), "question": (30, 60, 100)}
+LIMITS = {"workspace": (5, 30, 500), "upload": (5, 10, 20), "question": (30, 60, 100)}
 
 
 async def consume(action: str, owner: str, address: str):
