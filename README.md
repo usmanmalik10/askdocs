@@ -2,11 +2,11 @@
 
 Your documents. Clear answers.
 
-AskDocs is a commercial SaaS project for individuals and teams to ask questions about private documents and receive answers with source citations.
+AskDocs is an open-source SaaS project for individuals and teams to ask questions about private documents and receive answers with source citations.
 
 ## Current status
 
-The initial pnpm workspace and shared TypeScript configuration are in place. The applications are not implemented yet. Follow the linked Jira tickets for planned work and progress; design prototypes are not working product features.
+The initial pnpm workspace and shared TypeScript configuration are in place. The applications are not implemented yet. The roadmap below describes planned work; design prototypes are not working product features.
 
 ## Why one repository?
 
@@ -43,22 +43,21 @@ Use pnpm workspaces for the TypeScript applications and uv for the Python servic
 4. Ask questions and verify answers against cited passages.
 5. Manage members, usage and workspace settings.
 
-## Planning
+## Roadmap
 
-- [Sprint 1 board](https://usmanmaliksahib2611.atlassian.net/jira/software/projects/ASKDOCS/boards/1)
-- [Repository creation: ASKDOCS-2](https://usmanmaliksahib2611.atlassian.net/browse/ASKDOCS-2)
-- [Monorepo configuration: ASKDOCS-8](https://usmanmaliksahib2611.atlassian.net/browse/ASKDOCS-8)
-- [Project Setup & Infrastructure](https://usmanmaliksahib2611.atlassian.net/browse/ASKDOCS-1)
-- [Secure Sign-in](https://usmanmaliksahib2611.atlassian.net/browse/ASKDOCS-23)
-- [Private Workspaces](https://usmanmaliksahib2611.atlassian.net/browse/ASKDOCS-24)
+1. Bootstrap the frontend, backend services, local infrastructure and quality checks.
+2. Add secure sign-in and private workspaces.
+3. Add private document uploads, processing and retrieval.
+4. Add grounded answers with citations, history and feedback.
+5. Add team administration, usage controls and billing.
 
-FE, BE, DB, infrastructure, configuration and CI work have separate small tickets. Dependencies flow from database work to backend APIs to frontend integration.
+Suggestions and bug reports can be discussed in [GitHub Issues](https://github.com/usmanmalik10/askdocs/issues). Development proceeds in small tasks, with database work before the APIs and interfaces that depend on it.
 
 ## Development workflow
 
-Use the Jira key in branch names and commit messages. Keep changes focused on one ticket, explain the relevant concepts, and record the checks actually run. Add startup and test commands as each application is scaffolded.
+Reference the relevant issue in branch names and commit messages when available. Keep changes focused on one task, explain the relevant concepts, and record the checks actually run. Add startup and test commands as each application is scaffolded.
 
-Do not commit credentials, local environment files, uploaded documents or generated build artifacts. Keep project files private unless sharing is explicitly approved.
+Do not commit credentials, local environment files, uploaded documents or generated build artifacts.
 
 ## Designs
 
@@ -78,3 +77,9 @@ pnpm workspace:list
 For Ubuntu with nvm, run `nvm use` first. Windows users should select Node.js 22.23.4 with their Windows installation or version manager. Keep a separate clone and dependencies on each operating system; see [Development setup](docs/development/setup.md) for the workflow.
 
 The Node and pnpm versions are enforced during installation. `.python-version` selects Python for uv; uv's own version is documented and must be installed separately. `.env.example` contains placeholders only. There is no application start command yet.
+
+## License
+
+Copyright 2026 Usman Malik.
+
+This repository is licensed under the [Apache License, Version 2.0](LICENSE).
