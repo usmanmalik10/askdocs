@@ -105,15 +105,35 @@ export function Workspace() {
     finally { activeOperation.current = false; setBusy(null); }
   }
 
+  async function removeDocument() {
+    if (!selected || activeOperation.current || !window.confirm(`Delete “${selected.name}” and all its saved answers? This cannot be undone.`)) return;
+    activeOperation.current = true; setBusy("delete"); setError("");
+    try {
+      await api(`documents/${selected.id}`, { method: "DELETE" });
+      setWorkspace(current => current ? { ...current, documents: current.documents.filter(doc => doc.id !== selected.id) } : current);
+      historyRequest.current?.abort(); setSelected(null); setAnswers([]); setSource(null); setHistoryLoading(false);
+      window.history.replaceState(null, "", "/");
+    } catch (error) { report(error); }
+    finally { activeOperation.current = false; setBusy(null); }
+  }
+
+  async function eraseWorkspace() {
+    if (activeOperation.current || !window.confirm("Erase every document and answer in this guest workspace? This cannot be undone.")) return;
+    activeOperation.current = true; setBusy("erase"); setError("");
+    try { await api("workspace", { method: "DELETE" }); window.location.assign("/"); }
+    catch (error) { report(error); activeOperation.current = false; setBusy(null); }
+  }
+
   const library = <>
     {loading ? <p className="empty-library" role="status">Opening your workspace…</p> : workspace?.documents.length ? <ul className="document-list">{workspace.documents.map(doc => <li key={doc.id}><button type="button" aria-current={selected?.id === doc.id ? "true" : undefined} disabled={Boolean(busy)} onClick={() => void openDocument(doc)}><span className="document-icon" aria-hidden="true">▤</span><span><strong>{doc.name}</strong><small>{doc.chunk_count} passages · {Math.max(1, Math.round(doc.byte_size / 1024))} KB</small></span></button></li>)}</ul> : <p className="empty-library">No documents yet.<br/>Your first answer starts with a file.</p>}
     {selected ? <button className="button secondary new-upload" type="button" disabled={Boolean(busy)} onClick={() => { historyRequest.current?.abort(); setSelected(null); setAnswers([]); setError(""); setHistoryLoading(false); window.history.replaceState(null, "", "/"); }}>+ Upload another</button> : null}
+    {workspace ? <button className="erase-workspace" type="button" disabled={Boolean(busy)} onClick={() => void eraseWorkspace()}>{busy === "erase" ? "Erasing…" : "Erase this workspace"}</button> : null}
   </>;
 
   return <WorkspaceShell library={library}>
     {error ? <div className="error" role="alert"><strong>We couldn’t complete that step.</strong><br/>{error}{!workspace && !expired ? <p><button className="button secondary" onClick={() => window.location.reload()}>Retry connection</button></p> : null}</div> : null}
     {selected ? <>
-      <div className="document-title"><div><span className="eyebrow">ASK YOUR DOCUMENT</span><h1>{selected.name}</h1><p className="notice">{selected.chunk_count} searchable passages · answers stay with this document</p></div></div>
+      <div className="document-title"><div><span className="eyebrow">ASK YOUR DOCUMENT</span><h1>{selected.name}</h1><p className="notice">{selected.chunk_count} searchable passages · answers stay with this document</p></div><button className="button danger" type="button" disabled={Boolean(busy)} onClick={() => void removeDocument()}>{busy === "delete" ? "Deleting…" : "Delete document"}</button></div>
       <div className="conversation" aria-label="Document conversation" aria-busy={busy === "ask" || historyLoading}>
         {historyLoading ? <p role="status" className="notice">Loading saved answers…</p> : null}
         {!answers.length && !historyLoading ? <section className="chat-welcome"><span className="eyebrow">READY WHEN YOU ARE</span><h2>What would you like to understand?</h2><p>Ask a specific question about <strong>{selected.name}</strong>. Each answer includes the passages it used.</p><div className="suggestions">{["What are the main points in this document?", "What important dates or deadlines are mentioned?", "What actions does this document recommend?"].map(prompt => <button type="button" key={prompt} onClick={() => setQuestion(prompt)}>{prompt} <span aria-hidden="true">↗</span></button>)}</div></section> : null}

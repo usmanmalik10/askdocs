@@ -116,6 +116,8 @@ button, a, input, textarea { touch-action: manipulation; }
 .source-inner blockquote { margin: 24px 0; background: #edf3ff; border-left: 3px solid #245ae5; padding: 20px; font-size: 15px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .source-inner h3 { font-size: 13px; margin: 28px 0 12px; }
 .source-passage { font-size: 13px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.erase-workspace { min-height: 44px; width: 100%; text-align: left; padding: 12px 5px; font-size: 11px; color: #9d202b; background: transparent; border: 0; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; margin: 4px 0 25px; }
+@media (max-width: 700px) { .document-title { align-items: flex-start; flex-direction: column; } .erase-workspace { width: auto; margin: 0; } }
 @keyframes pulse { 50% { opacity: .3; } }
 @media (max-width: 700px) { .document-list { display: flex; gap: 8px; overflow-x: auto; margin: 10px 0 0; padding-bottom: 6px; } .document-list li { flex: 0 0 190px; min-width: 0; } .new-upload { width: auto; margin: 10px 0 0; } .consent { font-size: 11px; } .document-title h1 { font-size: 22px; } .chat-welcome { padding: 22px; } .chat-welcome h2 { font-size: 21px; } .composer { flex-direction: column; } .composer .button { width: 100%; } .answer-text { font-size: 14px; } .question-bubble { padding: 16px; } }
 @media (max-width: 1000px) { .app-shell { grid-template-columns: 225px minmax(0, 1fr); } .main-content { padding: 30px 25px; } .steps { gap: 8px; } .topbar { padding: 20px 25px; } }
