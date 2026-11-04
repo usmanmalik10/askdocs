@@ -120,14 +120,14 @@ export function Workspace() {
   async function eraseWorkspace() {
     if (activeOperation.current || !window.confirm("Erase every document and answer in this guest workspace? This cannot be undone.")) return;
     activeOperation.current = true; setBusy("erase"); setError("");
-    try { await api("workspace", { method: "DELETE" }); window.location.assign("/"); }
+    try { await api("workspace", { method: "DELETE" }); window.history.replaceState(null, "", "/"); window.location.reload(); }
     catch (error) { report(error); activeOperation.current = false; setBusy(null); }
   }
 
   async function freshWorkspace() {
     if (activeOperation.current) return;
     activeOperation.current = true; setBusy("reset");
-    try { await api("session/reset", { method: "POST" }); window.location.assign("/"); }
+    try { await api("session/reset", { method: "POST" }); window.history.replaceState(null, "", "/"); window.location.reload(); }
     catch (error) { report(error); activeOperation.current = false; setBusy(null); }
   }
 
@@ -155,7 +155,7 @@ export function Workspace() {
       <Welcome/>
       <form className="upload-card" onSubmit={event => void upload(event)} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!busy) chooseFile(event.dataTransfer.files[0]); }}>
         <div className="upload-icon" aria-hidden="true">↑</div><h2>{file ? file.name : "Drop a document here"}</h2><p>{file ? `${Math.max(1, Math.round(file.size / 1024))} KB · ready to upload` : "PDF, TXT, or Markdown · up to 3 MB · 50 PDF pages"}</p>
-        <input ref={fileInput} className="sr-only" tabIndex={-1} type="file" accept=".pdf,.txt,.md" aria-label="Choose a document" onChange={event => { chooseFile(event.target.files?.[0]); event.target.value = ""; }}/>
+        <input ref={fileInput} className="sr-only" tabIndex={-1} type="file" accept=".pdf,.txt,.md" aria-label="Document file" onChange={event => { chooseFile(event.target.files?.[0]); event.target.value = ""; }}/>
         <div className="upload-actions"><button type="button" className={file ? "button secondary" : "button"} disabled={Boolean(busy) || loading || expired} onClick={() => fileInput.current?.click()}>{file ? "Choose a different file" : "Choose a document"}</button>{file ? <button className="button" type="submit" disabled={!consent || Boolean(busy) || !workspace?.ai_ready || expired}>{busy === "upload" ? "Reading your document…" : "Upload and start ↗"}</button> : null}</div>
         <label className="consent"><input type="checkbox" checked={consent} onChange={event => setConsent(event.target.checked)} disabled={Boolean(busy)}/><span>I understand Google Gemini processes my text and questions. Free-tier content may be used to improve Google products. I’m using non-sensitive material. <Link href="/privacy">Data details</Link></span></label>
         {!loading && workspace && !workspace.ai_ready ? <p className="error" role="status">The site operator still needs to connect the AI provider. Uploads will be available after that connection.</p> : null}
