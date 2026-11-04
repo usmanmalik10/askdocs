@@ -15,6 +15,7 @@ out/
 dist/
 build/
 .turbo/
+.vercel/
 .pnpm-store/
 *.tsbuildinfo
 
@@ -46,3 +47,6 @@ data/
 .vscode/
 .DS_Store
 Thumbs.db
+
+.vercel
+.env*

@@ -1,85 +1,55 @@
 # AskDocs
 
-Your documents. Clear answers.
+**Your documents. Clear answers.**
 
-AskDocs is an open-source SaaS project for individuals and teams to ask questions about private documents and receive answers with source citations.
+AskDocs is an open-source document assistant. Upload a text-based PDF, UTF-8 text file, or Markdown note, ask a question, and inspect the passages cited in the answer. No sign-in or registration is required.
 
-## Current status
+## Release status
 
-The initial pnpm workspace and shared TypeScript configuration are in place. The applications are not implemented yet. The roadmap below describes planned work; design prototypes are not working product features.
+The guest MVP is live at **[askdocs-self.vercel.app](https://askdocs-self.vercel.app)**. The real production upload-to-answer flow, citations, history, guest isolation, deletion, and cleanup authorization have been verified. The implementation is delivered through [PR #4](https://github.com/usmanmalik10/askdocs/pull/4) in twenty feature commits.
 
-## Why one repository?
+CI passes 49 Python/PostgreSQL tests, four guest-boundary unit tests, six desktop/mobile browser scenarios, lint, TypeScript, and the production build. See the [release record](docs/release-verification.md) for exact evidence, scope, and remaining limits.
 
-AskDocs uses a monorepo: one Git repository containing separate applications and shared packages. This lets a backend contract change, its matching frontend change and their tests be reviewed together. Each application keeps its own responsibilities and can run and deploy separately.
+## What you can do
 
-A workspace is the package-manager configuration connecting these folders. It enables shared dependencies and commands; it does not mean the frontend and backend are one process. pnpm connects the TypeScript packages through `pnpm-workspace.yaml`; the Python AI service uses uv separately.
+- Upload PDF, TXT, and Markdown files up to 3 MB, 50 PDF pages, and 100,000 extracted characters.
+- Ask questions about one selected document and revisit its most recent 30 saved answers.
+- Open cited quotes and full extracted passages, with original PDF page numbers.
+- Delete a document and its saved answers, or erase the entire guest workspace.
+- Work in a temporary browser workspace that expires after 24 hours.
 
-## Planned structure
+Use public or non-sensitive documents. Google Gemini processes text and questions; its free tier may use submitted content to improve Google products. AskDocs checks that quoted citations exist in retrieved passages. This does not independently prove every generated claim. Read the [data-handling notice](docs/engineering-handbook.md#data-handling).
 
-The following is the target layout, not a claim that these applications already exist:
+## Architecture
 
-```text
-apps/
-  web/          Next.js frontend
-  api/          NestJS business API
-  ai/           FastAPI internal AI service
-  worker/       BullMQ background worker
-packages/
-  contracts/    API specifications and generated client types
-  database/     Database schema and migrations
-  config/       Shared development configuration
-infra/          Local PostgreSQL/pgvector, Redis and S3-compatible storage
-tests/          Integration, browser and AI-evaluation fixtures
-docs/           Architecture decisions, learning notes and runbooks
-```
+Next.js provides the responsive interface and same-origin guest API boundary. A private Python FastAPI service handles extraction, semantic retrieval, answer generation, and PostgreSQL/pgvector persistence. Vercel Services deploys both runtimes together; this Vercel feature is currently Beta.
 
-Use pnpm workspaces for the TypeScript applications and uv for the Python service. Tool versions and setup commands are documented in [Development setup](docs/development/setup.md). Application dependencies and startup commands will be added in their bootstrap tickets.
+The Python service has no public route. Unpredictable HttpOnly cookies identify guests, while every database operation is scoped to a hashed guest identity. Database-backed atomic budgets cap public usage without a Redis dependency. Original uploaded files are not retained.
 
-## MVP journey
+## Run and contribute
 
-1. Sign in and create a private workspace.
-2. Upload a text-based PDF, TXT or Markdown document.
-3. Wait for document processing to finish.
-4. Ask questions and verify answers against cited passages.
-5. Manage members, usage and workspace settings.
-
-## Roadmap
-
-1. Bootstrap the frontend, backend services, local infrastructure and quality checks.
-2. Add secure sign-in and private workspaces.
-3. Add private document uploads, processing and retrieval.
-4. Add grounded answers with citations, history and feedback.
-5. Add team administration, usage controls and billing.
-
-Suggestions and bug reports can be discussed in [GitHub Issues](https://github.com/usmanmalik10/askdocs/issues). Development proceeds in small tasks, with database work before the APIs and interfaces that depend on it.
-
-## Development workflow
-
-Reference the relevant issue in branch names and commit messages when available. Keep changes focused on one task, explain the relevant concepts, and record the checks actually run. Add startup and test commands as each application is scaffolded.
-
-Do not commit credentials, local environment files, uploaded documents or generated build artifacts.
-
-## Designs
-
-The editable AskDocs MVP designs currently live in a local FigCraft file named AskDocs-MVP.figcraft, with an AskDocs-Design-Review.html gallery. They are not yet published or copied into this repository.
-
-## Getting started
-
-Install Node.js **22.23.4**, pnpm **9.15.0**, Python **3.13.2**, and uv **0.13.5**. Use the repository root for the following commands on Windows or Ubuntu:
+Use Node.js 22.23.4, pnpm 9.15.0, Python 3.13.2, and uv 0.13.5. Start with the [development setup](docs/development/setup.md), then read the [engineering handbook](docs/engineering-handbook.md) for contracts, security boundaries, operations, and limitations.
 
 ```bash
-pnpm workspace:install
-pnpm workspace:list
+pnpm install --frozen-lockfile
+uv sync --project apps/backend --frozen
+pnpm lint
+pnpm typecheck
+pnpm test:unit
+pnpm test:api
+pnpm build
+pnpm exec playwright install chromium
+pnpm test:browser
 ```
 
-`pnpm workspace:install` installs JavaScript dependencies using the committed lockfile; it does not install system tools, configure secrets, or start services. `pnpm workspace:list` lists recognized packages. Currently these are the private root workspace and `@askdocs/config`.
+The database integration tests need a separate local test database. CI creates one automatically. See setup instructions before running them; tests refuse production databases.
 
-For Ubuntu with nvm, run `nvm use` first. Windows users should select Node.js 22.23.4 with their Windows installation or version manager. Keep a separate clone and dependencies on each operating system; see [Development setup](docs/development/setup.md) for the workflow.
+## Scope and roadmap
 
-The Node and pnpm versions are enforced during installation. `.python-version` selects Python for uv; uv's own version is documented and must be installed separately. `.env.example` contains placeholders only. There is no application start command yet.
+This release delivers the guest document-question-answer journey. The earlier enterprise roadmap—including accounts, team administration, sharing, billing, background ingestion, and commercial operations—remains future work. Existing design prototypes are references, not evidence that those features are implemented.
+
+Report reproducible bugs through [GitHub Issues](https://github.com/usmanmalik10/askdocs/issues). Never include real documents, API keys, cookies, or database credentials in an issue or PR.
 
 ## License
 
-Copyright 2026 Usman Malik.
-
-This repository is licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright 2026 Usman Malik. Licensed under the [Apache License, Version 2.0](LICENSE). Dependencies retain their licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
