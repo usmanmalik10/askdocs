@@ -6,7 +6,9 @@ AskDocs is an open-source document assistant. Upload a text-based PDF, UTF-8 tex
 
 ## Release status
 
-The guest MVP is implemented in [PR #4](https://github.com/usmanmalik10/askdocs/pull/4). CI and local browser checks pass; final provider connection and deployment verification are in progress. See the [release record](docs/release-verification.md) for actual results and outstanding gates. A deployed application is not complete until the live upload-to-answer flow passes.
+The guest MVP is live at **[askdocs-self.vercel.app](https://askdocs-self.vercel.app)**. The real production upload-to-answer flow, citations, history, guest isolation, deletion, and cleanup authorization have been verified. The implementation is delivered through [PR #4](https://github.com/usmanmalik10/askdocs/pull/4) in twenty feature commits.
+
+CI passes 49 Python/PostgreSQL tests, four guest-boundary unit tests, six desktop/mobile browser scenarios, lint, TypeScript, and the production build. See the [release record](docs/release-verification.md) for exact evidence, scope, and remaining limits.
 
 ## What you can do
 
@@ -50,4 +52,4 @@ Report reproducible bugs through [GitHub Issues](https://github.com/usmanmalik10
 
 ## License
 
-Copyright 2026 Usman Malik. Licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright 2026 Usman Malik. Licensed under the [Apache License, Version 2.0](LICENSE). Dependencies retain their licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).

@@ -58,3 +58,7 @@ Commit boundaries may shift to keep each change coherent; the final branch must 
 ## Deliberate limits
 
 PDF text extraction is not OCR. Audio, images, office files, account recovery, sharing, enterprise permissions, and commercial billing are out of scope. Generated claims can still be wrong; visitors must inspect sources. Free-tier capacity is bounded and is not a production availability guarantee.
+
+## Delivery result
+
+The guest MVP is live at [askdocs-self.vercel.app](https://askdocs-self.vercel.app). The single [implementation PR](https://github.com/usmanmalik10/askdocs/pull/4) contains twenty feature commits. The reviewed application passed 59 automated test cases and real public browser acceptance. The final release commit records the result and preserves the bundled font license; its CI and integration are checked before the handoff. See [release verification](release-verification.md) for source, deployments, evidence, and the enterprise scope that remains future work.

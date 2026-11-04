@@ -54,6 +54,6 @@ Temporary upstream failures were observed in initial model and public production
 
 Quote matching proves that a cited passage exists; it does not independently prove that every generated claim follows from it. Broad adversarial evaluation, OCR, large-file load testing, commercial guarantees, and enterprise features are outside this release.
 
-Verdict: fix findings 1–6 before release. All six corrections are included in the review commit; the final release remains gated on its CI result and public production verification.
+Verdict: Ship the bounded guest MVP. Findings 1–6 were corrected; the reviewed application passed 49 Python/PostgreSQL tests, four guest-boundary unit tests, six browser scenarios, and the complete public production acceptance flow. The final documentation and integration checks remain mandatory.
 
-Not checked: production public access at the time of this review. The final result is recorded separately in [release verification](release-verification.md).
+Not checked: broad adversarial model evaluation, large-scale load, and enterprise features. Exact public production evidence is recorded in [release verification](release-verification.md).
