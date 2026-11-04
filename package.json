@@ -9,6 +9,10 @@
     "pnpm": "9.15.0"
   },
   "scripts": {
+    "dev": "pnpm --filter @askdocs/web dev",
+    "build": "pnpm --filter @askdocs/web build",
+    "lint": "pnpm --filter @askdocs/web lint",
+    "typecheck": "pnpm --filter @askdocs/web typecheck",
     "workspace:install": "pnpm install --frozen-lockfile",
     "workspace:list": "pnpm --recursive list --depth -1"
   }
