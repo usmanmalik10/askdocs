@@ -8,7 +8,7 @@ AskDocs is an open-source document assistant. Upload a text-based PDF, UTF-8 tex
 
 The guest MVP is live at **[askdocs-self.vercel.app](https://askdocs-self.vercel.app)**. The real production upload-to-answer flow, citations, history, guest isolation, deletion, and cleanup authorization have been verified. The implementation is delivered through [PR #4](https://github.com/usmanmalik10/askdocs/pull/4) in twenty feature commits.
 
-CI passes 49 Python/PostgreSQL tests, four guest-boundary unit tests, six desktop/mobile browser scenarios, lint, TypeScript, and the production build. See the [release record](docs/release-verification.md) for exact evidence, scope, and remaining limits.
+CI checks Python/PostgreSQL behavior, guest-boundary unit tests, desktop/mobile browser scenarios, lint, TypeScript, and the production build. See the [release record](docs/release-verification.md) for dated test evidence, scope, and remaining limits.
 
 ## What you can do
 
