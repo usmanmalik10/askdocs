@@ -59,5 +59,51 @@ button, a, input, textarea { touch-action: manipulation; }
 .privacy-page h1 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -1.5px; line-height: 1.2; }
 .privacy-page h2 { font-size: 19px; margin-top: 32px; }
 .privacy-page p { color: #46556e; font-size: 15px; }
+.document-list { list-style: none; padding: 0; margin: 14px -8px; }
+.document-list button { display: flex; gap: 10px; align-items: center; width: 100%; border: 1px solid transparent; background: transparent; padding: 12px 9px; border-radius: 9px; cursor: pointer; color: #17243b; text-align: left; min-height: 60px; }
+.document-list button:hover, .document-list button[aria-current="true"] { background: #edf3ff; border-color: #ccdbfc; }
+.document-list button > span:last-child { min-width: 0; }
+.document-list strong { display: block; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.document-list small { display: block; color: #58667d; font-size: 10px; margin-top: 6px; }
+.document-icon { color: #245ae5; font-size: 23px; }
+.new-upload { width: 100%; margin: 6px 0 24px; }
+.upload-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #edf3ff; color: #245ae5; font-size: 25px; margin: 0 auto 14px; }
+.upload-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+.consent { display: flex; gap: 10px; align-items: flex-start; max-width: 590px; margin: 20px auto 0; font-size: 11px; line-height: 1.7; text-align: left; color: #46556e; }
+.consent input { width: 18px; height: 18px; flex: none; margin: 2px 0 0; accent-color: #245ae5; }
+.consent a { text-underline-offset: 3px; }
+.workspace-footnote { color: #58667d; font-size: 11px; text-align: center; line-height: 1.7; margin: 18px auto; }
+.document-title { display: flex; justify-content: space-between; gap: 15px; align-items: center; margin-bottom: 26px; }
+.document-title h1 { font-size: 26px; font-weight: 650; letter-spacing: -.7px; overflow-wrap: anywhere; margin: 8px 0; }
+.document-title .notice { margin: 8px 0; }
+.conversation { min-height: 330px; }
+.chat-welcome { max-width: 610px; background: #fff; border: 1px solid #dce3ed; padding: 30px; border-radius: 15px; margin: 32px auto; }
+.chat-welcome h2 { font-size: 23px; letter-spacing: -.6px; line-height: 1.3; }
+.chat-welcome p { font-size: 13px; line-height: 1.8; color: #58667d; overflow-wrap: anywhere; }
+.suggestions { display: grid; gap: 8px; margin-top: 25px; }
+.suggestions button { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; text-align: left; font-size: 12px; color: #3b5281; border: 1px solid #7b879b; background: #fff; border-radius: 9px; padding: 12px 14px; cursor: pointer; }
+.suggestions button:hover { background: #edf3ff; }
+.question-bubble { background: #eaf0fd; border: 1px solid #d5e0fa; padding: 18px 22px; border-radius: 12px; }
+.question-bubble .eyebrow { font-size: 9px; color: #3b5281; }
+.question-bubble p { font-size: 14px; line-height: 1.8; margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.answer-content { padding: 22px 5px 38px; }
+.answer-label { display: flex; gap: 9px; align-items: center; font-size: 12px; color: #245ae5; }
+.answer-label > span:last-child { margin-left: auto; color: #58667d; font-size: 10px; }
+.mini-brand { border: 1px solid #ccdbfc; background: #edf3ff; padding: 3px 6px; border-radius: 5px; font-weight: 700; }
+.answer-text { white-space: pre-wrap; font-size: 15px; line-height: 1.9; overflow-wrap: anywhere; margin: 20px 0; }
+.inline-sources { display: grid; gap: 8px; }
+.inline-sources details { border: 1px solid #7b879b; background: #fff; border-radius: 9px; font-size: 12px; }
+.inline-sources summary { cursor: pointer; min-height: 44px; padding: 13px; }
+.inline-sources details p, .inline-sources blockquote { padding: 12px; white-space: pre-wrap; line-height: 1.8; overflow-wrap: anywhere; }
+.inline-sources blockquote { background: #edf3ff; margin: 12px; }
+.question-form { background: #f6f8fc; padding: 20px 0 0; border-top: 1px solid #dce3ed; }
+.question-form label { font-size: 12px; font-weight: 650; display: block; margin: 0 0 10px; }
+.composer { display: flex; gap: 12px; align-items: stretch; }
+.composer textarea { min-width: 0; flex: 1; resize: vertical; border: 1px solid #7b879b; border-radius: 10px; padding: 13px 15px; background: #fff; color: #17243b; font-size: 13px; line-height: 1.6; }
+.composer textarea::placeholder { color: #66738a; }
+.working { display: flex; align-items: center; gap: 10px; color: #3b5281; font-size: 13px; padding: 24px 0; }
+.pulse { display: block; width: 9px; height: 9px; background: #245ae5; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (max-width: 700px) { .document-list { display: flex; gap: 8px; overflow-x: auto; margin: 10px 0 0; padding-bottom: 6px; } .document-list li { flex: 0 0 190px; min-width: 0; } .new-upload { width: auto; margin: 10px 0 0; } .consent { font-size: 11px; } .document-title h1 { font-size: 22px; } .chat-welcome { padding: 22px; } .chat-welcome h2 { font-size: 21px; } .composer { flex-direction: column; } .composer .button { width: 100%; } .answer-text { font-size: 14px; } .question-bubble { padding: 16px; } }
 @media (max-width: 1000px) { .app-shell { grid-template-columns: 225px minmax(0, 1fr); } .main-content { padding: 30px 25px; } .steps { gap: 8px; } .topbar { padding: 20px 25px; } }
 @media (max-width: 700px) { .app-shell { display: block; } .sidebar { padding: 18px 20px; border-right: 0; border-bottom: 1px solid #dce3ed; } .brand { font-size: 23px; } .brand-caption, .workspace-label, .sidebar-note, .repository-link { display: none; } .library-heading { margin-top: 24px; } .empty-library { margin: 0; padding-bottom: 0; } .topbar { min-height: 58px; padding: 12px 20px; } .topbar > span:first-child { font-size: 11px; } .guest-badge { padding: 7px 8px; font-size: 10px; } .main-content { padding: 24px 20px; } .welcome { padding-top: 8px; } .welcome h1 { font-size: 34px; letter-spacing: -1.3px; } .welcome-description { font-size: 13px; } .desktop-break { display: none; } .steps { grid-template-columns: 1fr; gap: 0; margin: 24px auto; } .steps li { display: grid; grid-template-columns: 28px 1fr; gap: 5px 10px; padding: 12px 0; } .steps li > span { grid-row: span 2; margin: 2px 0 0; } .steps p { margin: 0; } .upload-card { padding: 22px 16px; } }
